@@ -1,7 +1,8 @@
 <?php
+// Ստուգում ենք Railway-ի URL-ը կամ առանձին փոփոխականները, հակառակ դեպքում՝ MAMP-ի տվյալները
 $host = getenv('MYSQLHOST') ?: 'localhost';
-$db   = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: 'travelgo_db'; 
-$user = getenv('MYSQLUSER') ?: 'root';        
+$db   = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: 'travelgo_db';
+$user = getenv('MYSQLUSER') ?: 'root';       
 $pass = getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : 'root';
 $port = getenv('MYSQLPORT') ?: '3306';
 
