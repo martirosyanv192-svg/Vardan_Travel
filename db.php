@@ -1,23 +1,9 @@
 <?php
-// Ստուգում ենք՝ արդյոք առկա է Railway-ի URL փոփոխականը
-$database_url = getenv('DATABASE_URL') ?: getenv('MYSQL_URL');
-
-if ($database_url) {
-    // Railway-ի տվյալների ավտոմատ վերծանում
-    $url = parse_url($database_url);
-    $host = $url['host'] ?? 'localhost';
-    $port = $url['port'] ?? '3306';
-    $user = $url['user'] ?? 'root';
-    $pass = $url['pass'] ?? '';
-    $db   = ltrim($url['path'] ?? '', '/');
-} else {
-    // Լոկալ MAMP տվյալներ (երբ աշխատում եք համակարգչում)
-    $host = getenv('MYSQLHOST') ?: 'localhost';
-    $port = getenv('MYSQLPORT') ?: '3306';
-    $db   = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: 'travelgo_db';
-    $user = getenv('MYSQLUSER') ?: 'root';
-    $pass = getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : 'root';
-}
+$host = 'thomas.proxy.rlwy.net'; // Railway-ի Public Host-ը
+$port = '16638';                 // Railway-ի Public Port-ը
+$db   = 'railway';               // Բազայի անունը
+$user = 'root';                  // Օգտատերը
+$pass = 'PRgbbhmvEJxNPSxgUUQYrOjzqdxJRwNq'; // Ձեր գաղտնաբառը
 
 try {
     $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
