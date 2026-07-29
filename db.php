@@ -1,20 +1,9 @@
 <?php
-// Ստուգում ենք՝ արդյոք կայքն աշխատում է Railway-ում, թե տանը (MAMP)
-if (getenv('MYSQLHOST') || getenv('DATABASE_URL')) {
-    // Railway-ի միջավայր
-    $host = getenv('MYSQLHOST') ?: 'thomas.proxy.rlwy.net';
-    $port = getenv('MYSQLPORT') ?: '16638';
-    $db   = getenv('MYSQLDATABASE') ?: 'railway';
-    $user = getenv('MYSQLUSER') ?: 'root';
-    $pass = getenv('MYSQLPASSWORD') ?: 'PRgbbhmvEJxNPSxgUUQYrOjzqdxJRwNq';
-} else {
-    // Լոկալ MAMP միջավայր (համակարգչում)
-    $host = 'localhost';
-    $port = '3306';
-    $db   = 'travelgo_db';
-    $user = 'root';
-    $pass = 'root';
-}
+$host = getenv('MYSQLHOST') ?: 'mysql.railway.internal';
+$port = getenv('MYSQLPORT') ?: '3306';
+$db   = getenv('MYSQLDATABASE') ?: 'railway';
+$user = getenv('MYSQLUSER') ?: 'root';
+$pass = getenv('MYSQLPASSWORD') ?: 'PRgbbhmvEJxNPSxgUUQYrOjzqdxJRwNq';
 
 try {
     $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
