@@ -1,11 +1,15 @@
 <?php
-$host = 'localhost';
-$db   = 'travelgo_db'; // Ձեր բազայի անունը
-$user = 'root';        // Ձեր MySQL օգտանունը
-$pass = 'root';            // Ձեր MySQL գաղտնաբառը (օրինակ՝ 'root' կամ դատարկ)
+// Ստուգում ենք՝ արդյոք կան Railway-ի միջավայրի փոփոխականներ, թե ոչ,
+// հակառակ դեպքում օգտագործում ենք ձեր լոկալ MAMP-ի տվյալները։
+$host = getenv('MYSQLHOST') ?: 'localhost';
+$db   = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: 'travelgo_db';
+$user = getenv('MYSQLUSER') ?: 'root';
+$pass = getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : 'root';
+$port = getenv('MYSQLPORT') ?: '3306';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8mb4", $user, $pass, [
+    $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+    $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
