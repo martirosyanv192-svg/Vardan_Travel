@@ -1,20 +1,22 @@
 <?php
-// Ստուգում ենք՝ արդյոք կա Railway-ի միջավայրի փոփոխական
-$host = getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: 'localhost';
-$port = getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: '3306';
-$db   = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: 'travelgo_db';
-$user = getenv('MYSQLUSER') ?: getenv('DB_USER') ?: 'root';
-$pass = getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : (getenv('DB_PASS') !== false ? getenv('DB_PASS') : 'root');
-
-// Եթե URL-ով է տրված (օրինակ DATABASE_URL կամ MYSQL_URL)
+// Ստուգում ենք՝ արդյոք առկա է Railway-ի URL փոփոխականը
 $database_url = getenv('DATABASE_URL') ?: getenv('MYSQL_URL');
+
 if ($database_url) {
+    // Եթե տրված է Railway-ի URL-ը, ավտոմատ վերծանում ենք այն
     $url = parse_url($database_url);
-    $host = $url['host'] ?? $host;
-    $port = $url['port'] ?? $port;
-    $user = $url['user'] ?? $user;
-    $pass = $url['pass'] ?? $pass;
-    $db   = ltrim($url['path'] ?? '', '/') ?: $db;
+    $host = $url['host'] ?? 'localhost';
+    $port = $url['port'] ?? '3306';
+    $user = $url['user'] ?? 'root';
+    $pass = $url['pass'] ?? '';
+    $db   = ltrim($url['path'] ?? '', '/');
+} else {
+    // Հակառակ դեպքում օգտագործում ենք լոկալ MAMP-ի տվյալները
+    $host = getenv('MYSQLHOST') ?: 'localhost';
+    $port = getenv('MYSQLPORT') ?: '3306';
+    $db   = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: 'travelgo_db';
+    $user = getenv('MYSQLUSER') ?: 'root';
+    $pass = getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : 'root';
 }
 
 try {
@@ -24,8 +26,7 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
     ]);
 } catch (PDOException $e) {
-    // Որպեսզի գաղտնաբառերը կամ սխալները բացահայտ չերևան, բայց դուք հասկանաք խնդիրը
-    echo json_encode(['success' => false, 'message' => 'Բազայի միացման սխալ: Ստուգեք Railway-ի Variable-ները']);
+    echo json_encode(['success' => false, 'message' => 'Բազայի միացման սխալ: ' . $e->getMessage()]);
     exit;
 }
 ?>
