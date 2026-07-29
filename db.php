@@ -1,10 +1,22 @@
 <?php
-// Ստուգում ենք Railway-ի URL-ը կամ առանձին փոփոխականները, հակառակ դեպքում՝ MAMP-ի տվյալները
-$host = getenv('MYSQLHOST') ?: 'localhost';
-$db   = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: 'travelgo_db';
-$user = getenv('MYSQLUSER') ?: 'root';       
-$pass = getenv('MYSQLPASSWORD') !== false ? getenv('MYSQLPASSWORD') : 'root';
-$port = getenv('MYSQLPORT') ?: '3306';
+// Ստուգում ենք՝ արդյոք կա Railway-ի DATABASE_URL/MYSQL_URL, թե աշխատում ենք լոկալ (MAMP)
+$database_url = getenv('DATABASE_URL') ?: getenv('MYSQL_URL');
+
+if ($database_url) {
+    $url = parse_url($database_url);
+    $host = $url['host'] ?? 'localhost';
+    $port = $url['port'] ?? '3306';
+    $user = $url['user'] ?? 'root';
+    $pass = $url['pass'] ?? '';
+    $db   = ltrim($url['path'] ?? '', '/');
+} else {
+    // Լոկալ MAMP տվյալներ
+    $host = 'localhost';
+    $port = '3306';
+    $db   = 'travelgo_db';
+    $user = 'root';
+    $pass = 'root';
+}
 
 try {
     $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
