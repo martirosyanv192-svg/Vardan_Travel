@@ -3,7 +3,7 @@
 $database_url = getenv('DATABASE_URL') ?: getenv('MYSQL_URL');
 
 if ($database_url) {
-    // Եթե տրված է Railway-ի URL-ը, ավտոմատ վերծանում ենք այն
+    // Railway-ի տվյալների ավտոմատ վերծանում
     $url = parse_url($database_url);
     $host = $url['host'] ?? 'localhost';
     $port = $url['port'] ?? '3306';
@@ -11,7 +11,7 @@ if ($database_url) {
     $pass = $url['pass'] ?? '';
     $db   = ltrim($url['path'] ?? '', '/');
 } else {
-    // Հակառակ դեպքում օգտագործում ենք լոկալ MAMP-ի տվյալները
+    // Լոկալ MAMP տվյալներ (երբ աշխատում եք համակարգչում)
     $host = getenv('MYSQLHOST') ?: 'localhost';
     $port = getenv('MYSQLPORT') ?: '3306';
     $db   = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: 'travelgo_db';
