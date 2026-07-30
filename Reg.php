@@ -259,19 +259,27 @@ session_start();
   <div class="main-card">
     <div class="form-container">
       <form class="glass-form" onsubmit="handleLoginSubmit(event)">
-        <h1 class="glow-text">Մուտք ✈️</h1>
-        <p class="subtitle">Բացահայտիր աշխարհն այսօր</p>
-
-        <div class="input-box">
-          <input type="email" id="login-email" required placeholder=" ">
-          <label><i class="fa-solid fa-envelope"></i> Էլ․ Հասցե</label>
+      <h1 class="glow-text">Գրանցում ✈️</h1>
+        <p class="subtitle">Միացիր մեր ճանապարհորդների ակումբին</p>
+    <div class="input-box">
+          <input type="text" required placeholder=" ">
+          <label><i class="fa-solid fa-user"></i> Անուն Ազգանուն</label>
+          <span class="focus-border"></span>
         </div>
 
         <div class="input-box">
-          <input type="password" id="login-pass" required placeholder=" ">
+          <input type="email" required placeholder=" ">
+          <label><i class="fa-solid fa-envelope"></i> Էլ. Հասցե</label>
+          <span class="focus-border"></span>
+        </div>
+
+        <div class="input-box">
+          <input type="password" required placeholder=" ">
           <label><i class="fa-solid fa-lock"></i> Գաղտնաբառ</label>
+          <span class="focus-border"></span>
         </div>
-        <button type="submit" class="btn-glow">ՄՈՒՏՔ ԳՈՐԾԵԼ</button>
+
+        <button type="submit" class="btn-glow">ՍՏԵՂԾԵԼ ՀԱՇԻՎ</button>
 
         <div class="switch-link">
           <span>ՈՒնե՝ք հաշիվ:</span> 
