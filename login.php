@@ -275,7 +275,7 @@ session_start();
 
         <div class="switch-link">
           <span>Չունե՞ք հաշիվ:</span>
-          <a href="Reg.php">Գրանցվել</a>
+          <a href="Reg.php">Գրանցվել <br> </a>
            <a href="index.php">Փակել</a>
 
         </div>
