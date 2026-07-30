@@ -334,6 +334,7 @@ endif;
         let currentLang = localStorage.getItem('lang') || 'hy';
         let adminMap = null, adminMarker = null;
         let allAdminTours = [];
+        let currentLoadedBookings = [];
 
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
@@ -572,6 +573,7 @@ endif;
         }
 
         function drawBookingsTable(bookings) {
+            currentLoadedBookings = bookings;
             const tableBody = document.getElementById('admin-bookings-table');
             tableBody.innerHTML = '';
             const t = adminTranslations[currentLang];
@@ -608,17 +610,45 @@ endif;
             });
         }
 
-        // EmailJS-ով նամակ ուղարկելու ֆունկցիա
+        function updateBookingStatus(id, newStatus) {
+            let localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
+            
+            // Որոնում ենք հայտը թե՛ ընթացիկ բեռնված ցուցակում, թե՛ LocalStorage-ում
+            let booking = currentLoadedBookings.find(b => b.id == id) || localBookings.find(b => b.id == id);
+
+            if (booking) {
+                booking.status = newStatus;
+                
+                let idx = localBookings.findIndex(b => b.id == id);
+                if (idx !== -1) {
+                    localBookings[idx].status = newStatus;
+                } else {
+                    localBookings.push(booking);
+                }
+                
+                localStorage.setItem('admin_bookings_list', JSON.stringify(localBookings));
+                
+                // Ուղարկում ենք էլ․ նամակ EmailJS-ի միջոցով
+                sendEmailNotification(booking, newStatus);
+            }
+            
+            renderBookings();
+            renderAdminTours();
+        }
+
         function sendEmailNotification(booking, status) {
             const clientEmail = booking.client_email || booking.email;
             const clientName = booking.client_name || booking.name || "Հաճախորդ";
             const tourTitle = booking.tour_title || booking.title || "Տուր";
 
-            if (!clientEmail || clientEmail === '-') return;
+            if (!clientEmail || clientEmail === '-') {
+                alert("Հաճախորդի էլ․ փոստը բացակայում է, նամակ չուղարկվեց։");
+                return;
+            }
 
             const statusText = status === 'APPROVED' ? 'ՀԱՍՏԱՏՎԱԾ Է 🟢' : 'ՄԵՐԺՎԱԾ Է 🔴';
             const messageText = status === 'APPROVED' 
-                ? `Ուրախ ենք տեղեկացնել, որ «${tourTitle}» տուրի Ձեր ամրագրումը հաստատվել է։`
+                ? `Ուրախ ենք տեղեկացնել, որ «${tourTitle}» տուրի Ձեր ամրագրումը հաջողությամբ հաստատվել է։`
                 : `Ցավոք, «${tourTitle}» տուրի Ձեր ամրագրման հայտը մերժվել է։`;
 
             const templateParams = {
@@ -629,35 +659,14 @@ endif;
                 message: messageText
             };
 
-            // ⚠️ YOUR_SERVICE_ID-ն և YOUR_TEMPLATE_ID-ն փոխարինեք EmailJS-ի ձեր ID-ներով
-            emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", templateParams)
+            emailjs.send("service_5roj4kc", "template_mqpg89r", templateParams)
                 .then(function(response) {
                     console.log("Email sent successfully!", response.status, response.text);
+                    alert(`Նամակը հաջողությամբ ուղարկվեց ${clientEmail} հասցեին:`);
                 }, function(error) {
                     console.error("EmailJS error:", error);
+                    alert("Խափանում նամակն ուղարկելիս։ Ստուգեք EmailJS Service ID-ն և Template ID-ն։");
                 });
-        }
-
-        function updateBookingStatus(id, newStatus) {
-            let bookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
-            let updatedBooking = null;
-
-            bookings = bookings.map(b => {
-                if (b.id == id) {
-                    b.status = newStatus;
-                    updatedBooking = b;
-                }
-                return b;
-            });
-
-            localStorage.setItem('admin_bookings_list', JSON.stringify(bookings));
-            
-            if (updatedBooking) {
-                sendEmailNotification(updatedBooking, newStatus);
-            }
-
-            renderBookings();
-            renderAdminTours();
         }
 
         function clearAllBookings() {
