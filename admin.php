@@ -2,7 +2,7 @@
 session_start();
 
 // -------------------------------------------------------------
-// 1. ԱԴՄԻՆԻ ԳԱՂՏՆԱԲԱՌԸ (Կարող եք փոխել ըստ ցանկության)
+// 1. ԱԴՄԻՆԻ ԳԱՂՏՆԱԲԱՌԸ
 // -------------------------------------------------------------
 $ADMIN_PASSWORD = '12345'; 
 
@@ -91,7 +91,7 @@ exit;
 endif;
 
 // -------------------------------------------------------------
-// 3. ՀԻՆ ԱԴՄԻՆ ՊԱՆԵԼԸ (ԲԱՑՎՈՒՄ Է ՄԻԱՅՆ ՃԻՇՏ ԳԱՂՏՆԱԲԱՌԻՑ ՀԵՏՈ)
+// 3. ԱԴՄԻՆ ՊԱՆԵԼ (ԲԱՑՎՈՒՄ Է ՄԻԱՅՆ ՃԻՇՏ ԳԱՂՏՆԱԲԱՌԻՑ ՀԵՏՈ)
 // -------------------------------------------------------------
 ?>
 <!DOCTYPE html>
@@ -113,7 +113,6 @@ endif;
 
     <script>
         tailwind.config = { darkMode: 'class' };
-
         function transliterateArmToEng(text) {
             if (!text || typeof text !== 'string') return "";
             const armToEngMap = {
@@ -157,6 +156,7 @@ endif;
                 <button onclick="toggleLanguage()" id="lang-btn" class="px-3 py-2 text-xs font-black bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-sky-500 hover:text-white transition-all">EN</button>
                 <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">🌓</button>
                 <button onclick="goToSite()" id="back-site-btn" class="bg-slate-900 dark:bg-sky-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg hover:opacity-90">Դեպի Կայք</button>
+                <a href="admin.php?action=logout" class="bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white px-3 py-2.5 rounded-xl text-xs font-bold transition-all">ելք</a>
             </div>
         </div>
     </nav>
@@ -425,10 +425,11 @@ endif;
 
         function findCoordinates() {
             const query = document.getElementById('title-hy').value || document.getElementById('title-en').value;
-            if (!query) { alert('Խնդրում ենք լրացնել անվանումը:'); return; }
+            if (!query) { alert('Խնդրում ենք լրացնել անվանումը'); return; }
             
             fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`)
-                .then(res => res.json()) .then(data => {
+                .then(res => res.json())
+                .then(data => {
                     if (data && data.length > 0) {
                         const lat = parseFloat(data[0].lat);
                         const lon = parseFloat(data[0].lon);
@@ -438,7 +439,7 @@ endif;
                         if (adminMarker) adminMap.removeLayer(adminMarker);
                         adminMarker = L.marker([lat, lon]).addTo(adminMap);
                     } else {
-                        alert('Վայրը չգտնվեց քարտեզի վրա:');
+                        alert('Վայրը չգտնվեց քարտեզի վրա');
                     }
                 });
         }
@@ -447,48 +448,33 @@ endif;
             fetch('fetch_tours.php')
                 .then(res => res.json())
                 .then(data => {
-                    const tableBody = document.getElementById('admin-tours-table');
-                    tableBody.innerHTML = '';
-                    const t = adminTranslations[currentLang];
-                    allAdminTours = data.tours || [];
-
-                    const localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
-
+                    allAdminTours = Array.isArray(data) ? data : [];
+                    const tbody = document.getElementById('admin-tours-table');
+                    if (!tbody) return;
+                    
+                    tbody.innerHTML = '';
+                    
                     allAdminTours.forEach(tour => {
-                        const title = tour['title_' + currentLang] || tour.title_hy || tour.title_en || "Untitled";
-                        const dateFormatted = tour.tour_date ? tour.tour_date.replace(' ', ' T ') : '---';
-                        const totalSpots = tour.spots || 20;
-
-                        const confirmedCount = localBookings.filter(b => {
-                            const bTitle = (b.tour_title || b.title || "").trim().toLowerCase();
-                            const currentTourTitle = title.trim().toLowerCase();
-                            const isStatusConfirmed = String(b.status).toUpperCase() === 'CONFIRMED' || String(b.status).toUpperCase() === 'APPROVED';
-                            return isStatusConfirmed && (bTitle === currentTourTitle || b.tour_id == tour.id);
-                        }).length;
-
-                        tableBody.innerHTML += `
-                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 border-b border-slate-100 dark:border-slate-800">
-                                <td class="p-4 font-black text-xs md:text-sm max-w-[150px] truncate">${title}</td>
-                                <td class="p-4 text-[10px] font-mono text-slate-500">${dateFormatted}</td>
-                                <td class="p-4">
-                                    <div class="flex flex-col">
-                                        <span class="bg-sky-50 dark:bg-sky-500/10 text-sky-700 dark:text-sky-400 text-xs px-2.5 py-1 rounded-full font-extrabold w-fit">
-                                            🟢 ${confirmedCount} / ${totalSpots} տեղ
-                                        </span>
-                                        <span class="text-[10px] text-slate-400 mt-0.5 ml-1 font-semibold">
-                                            (Ազատ՝ ${Math.max(0, totalSpots - confirmedCount)})
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="p-4 space-x-3 whitespace-nowrap">
-                                    <button onclick="startEditTour(${tour.id})" class="text-sky-500 font-extrabold text-xs hover:underline uppercase">${t.editBtn}</button>
-                                    <button onclick="deleteTour(${tour.id})" class="text-red-500 font-extrabold text-xs hover:underline uppercase">${t.deleteBtn}</button>
+                        const title = currentLang === 'hy' ? tour.title_hy : tour.title_en;
+                        tbody.innerHTML += `
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                                <td class="p-4 font-medium">${title || '-'}</td>
+                                <td class="p-4 text-xs">${tour.tour_date || '-'}</td>
+                                <td class="p-4 text-xs">0 / ${tour.spots || 0}</td>
+                                <td class="p-4 flex gap-2">
+                                    <button onclick="editTour(${tour.id})" class="text-sky-500 text-xs font-bold hover:underline">Խմբագրել</button>
+                                    <button onclick="deleteTour(${tour.id})" class="text-rose-500 text-xs font-bold hover:underline">Ջնջել</button>
                                 </td>
                             </tr>
                         `;
                     });
                 })
-                .catch(() => console.log("Tours fetch error"));
+                .catch(err => console.error('Admin tours error:', err));
+        }
+
+        // Ավելացված՝ որ editTour-ը աշխատի
+        function editTour(id) {
+            startEditTour(id);
         }
 
         function startEditTour(id) {
@@ -555,9 +541,8 @@ endif;
             if(!tableBody) return;
             tableBody.innerHTML = '';
             const t = adminTranslations[currentLang];
-
             let localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
-
+            
             fetch('get_bookings.php')
                 .then(res => res.json())
                 .then(dbBookings => {
@@ -567,18 +552,16 @@ endif;
                         drawBookingsTable(localBookings);
                     }
                 })
-                .catch(() => {
-                    drawBookingsTable(localBookings);
-                });
+                .catch(() => { drawBookingsTable(localBookings); });
         }
 
         function drawBookingsTable(bookings) {
             const tableBody = document.getElementById('admin-bookings-table');
             tableBody.innerHTML = '';
             const t = adminTranslations[currentLang];
-
+            
             if (bookings.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Հայտեր չկան:</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400">Հայտեր չկան</td></tr>`;
                 return;
             }
 
@@ -586,7 +569,6 @@ endif;
                 const tourTitle = b.tour_title || b.title || "Տուր";
                 const clientName = b.client_name || b.name || "Անանուն";
                 const clientEmail = b.client_email || b.email || "-";
-                
                 let statusBadge = `<span class="text-amber-500 font-bold">${t.statusPending}</span>`;
                 if (b.status === 'APPROVED' || b.status === 'CONFIRMED') {
                     statusBadge = `<span class="text-emerald-500 font-bold">${t.statusApproved}</span>`;
@@ -609,23 +591,38 @@ endif;
             });
         }
 
-function updateBookingStatus(id, newStatus) {
-    let bookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
-    
-    // Գտնում ենք տվյալ հայտը
-    let booking = bookings.find(b => b.id == id);
-    
-    if (booking) {
-        booking.status = newStatus;
-        localStorage.setItem('admin_bookings_list', JSON.stringify(bookings));
-        
-        // Ուղարկում ենք Էլ․ նամակ EmailJS-ի միջոցով
-        sendEmailNotification(booking, newStatus);
-    }
-    
-    renderBookings();
-    renderAdminTours();
-}
+        function updateBookingStatus(id, newStatus) {
+            // Թարմացնում ենք DB-ում
+            fetch('update_booking.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, status: newStatus })
+            })
+            .then(res => res.json())
+            .then(data => {
+                // Թարմացնում ենք նաև localStorage-ը (եթե կա)
+                let bookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
+                let booking = bookings.find(b => b.id == id);
+                if (booking) {
+                    booking.status = newStatus;
+                    localStorage.setItem('admin_bookings_list', JSON.stringify(bookings));
+                    sendEmailNotification(booking, newStatus);
+                }
+                renderBookings();
+                renderAdminTours();
+            })
+            .catch(err => {
+                console.error(err);
+                // Եթե DB-ն չաշխատեց — գոնե localStorage թարմացնենք
+                let bookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
+                let booking = bookings.find(b => b.id == id);
+                if (booking) {
+                    booking.status = newStatus;
+                    localStorage.setItem('admin_bookings_list', JSON.stringify(bookings));
+                }
+                renderBookings();
+            });
+        }
 
         function clearAllBookings() {
             if (confirm("Վստա՞հ եք, որ ուզում եք մաքրել բոլոր հայտերը:")) {
@@ -667,47 +664,23 @@ function updateBookingStatus(id, newStatus) {
                     <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 border-b dark:border-slate-800">
                         <td class="p-4 font-black text-xs">${displayName}</td>
                         <td class="p-4 text-xs font-mono text-slate-500">${u.email}</td>
-                        <td class="p-4 text-xs text-slate-400 font-bold">${regDate}</td>
+                        <td class="p-4 text-xs font-mono text-slate-400">${regDate}</td>
                     </tr>
                 `;
             });
         }
+
         function sendEmailNotification(booking, status) {
-    const clientEmail = booking.client_email || booking.email;
-    const clientName = booking.client_name || booking.name || "Հաճախորդ";
-    const tourTitle = booking.tour_title || booking.title || "Տուր";
-
-    if (!clientEmail || clientEmail === '-') {
-        alert("Հաճախորդի էլ․ փոստը բացակայում է, նամակ չուղարկվեց։");
-        return;
-    }
-
-    // Նամակի կարգավիճակը հայերենով
-    const statusText = status === 'APPROVED' ? 'ՀԱՍՏԱՏՎԱԾ Է 🟢' : 'ՄԵՐԺՎԱԾ Է 🔴';
-    const messageText = status === 'APPROVED' 
-        ? `Ուրախ ենք տեղեկացնել, որ «${tourTitle}» տուրի Ձեր ամրագրումը հաջողությամբ հաստատվել է։`
-        : `Ցավոք, «${tourTitle}» տուրի Ձեր ամրագրման հայտը մերժվել է։`;
-
-    // Փոխանցվող պարամետրերը EmailJS Տրաֆարետին (Template-ին)
-    const templateParams = {
-        to_name: clientName,
-        to_email: clientEmail,
-        tour_name: tourTitle,
-        booking_status: statusText,
-        message: messageText
-    };
-
-    // EmailJS Ուղարկում
-    // ⚠️ Փոխարինեք YOUR_SERVICE_ID-ն և YOUR_TEMPLATE_ID-ն ձեր EmailJS dashboard-ի ID-ներով
-    emailjs.send("service_5roj4kc", "template_mqpg89r", templateParams)
-        .then(function(response) {
-            console.log("Email sent successfully!", response.status, response.text);
-            alert(`Նամակը հաջողությամբ ուղարկվեց ${clientEmail} հասցեին:`);
-        }, function(error) {
-            console.error("EmailJS error:", error);
-            alert("Խափանում նամակն ուղարկելիս։ Ստուգեք EmailJS Service ID-ն և Template ID-ն։");
-        });
-}
+            const templateParams = {
+                client_name: booking.client_name || booking.name || 'Client',
+                client_email: booking.client_email || booking.email,
+                tour_title: booking.tour_title || booking.title || 'Tour',
+                status: status === 'APPROVED' ? 'Approved (Հաստատված է)' : 'Rejected (Մերժված է)'
+            };
+            emailjs.send('service_default', 'template_default', templateParams)
+                .then(() => console.log('Email sent successfully'))
+                .catch((err) => console.log('Email failed:', err));
+        }
     </script>
 </body>
 </html>
