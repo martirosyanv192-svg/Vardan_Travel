@@ -2,7 +2,7 @@
 session_start();
 
 // -------------------------------------------------------------
-// 1. ԱԴՄԻՆԻ ԳԱՂՏՆԱԲԱՌԸ (Կարող եք փոխել ըստ ցանկության)
+// 1. ԱԴՄԻՆԻ ԳԱՂՏՆԱԲԱՌԸ
 // -------------------------------------------------------------
 $ADMIN_PASSWORD = '12345'; 
 
@@ -13,7 +13,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     exit;
 }
 
-// Մուտքի (Login) ստուգում POST հարցման ժամանակ
+// Մուտքի (Login) ստուգում
 $login_error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_login_submit'])) {
     $input_password = $_POST['admin_password'] ?? '';
@@ -26,9 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['admin_login_submit'])
     }
 }
 
-// -------------------------------------------------------------
-// 2. ԵԹԵ ԱԴՄԻՆԸ ՄՈՒՏՔ ՉԻ ԳՈՐԾԵԼ, ՑՈՒՅՑ ՏԱԼ ՄՈՒՏՔԻ ԷՋԸ (LOGIN FORM)
-// -------------------------------------------------------------
+// ԵԹԵ ԱԴՄԻՆԸ ՄՈՒՏՔ ՉԻ ԳՈՐԾԵԼ
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true):
 ?>
 <!DOCTYPE html>
@@ -39,18 +37,9 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <title>TravelGo - Ադմին Մուտք</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; }
-    </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4">
-
     <div class="max-w-md w-full bg-slate-900/90 border border-slate-800 p-8 rounded-3xl shadow-2xl backdrop-blur-xl space-y-6 relative overflow-hidden">
-        
-        <div class="absolute -top-10 -right-10 w-32 h-32 bg-sky-500/20 rounded-full blur-2xl"></div>
-        <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
-
         <div class="text-center space-y-2 relative z-10">
             <div class="w-16 h-16 bg-sky-500/10 border border-sky-500/30 rounded-2xl flex items-center justify-center mx-auto text-sky-400 text-2xl shadow-lg shadow-sky-500/10">
                 <i class="fa-solid fa-user-shield"></i>
@@ -73,7 +62,6 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
                     <i class="fa-solid fa-lock absolute left-3.5 top-3.5 text-slate-500 text-sm"></i>
                 </div>
             </div>
-
             <button type="submit" name="admin_login_submit" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition-all shadow-lg shadow-sky-500/25">
                 Մուտք Պանել
             </button>
@@ -83,17 +71,13 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
             <a href="index.php" class="text-xs text-slate-500 hover:text-sky-400 transition-colors">← Վերադառնալ Գլխավոր Էջ</a>
         </div>
     </div>
-
 </body>
 </html>
 <?php 
 exit;
 endif;
-
-// -------------------------------------------------------------
-// 3. ՀԻՆ ԱԴՄԻՆ ՊԱՆԵԼԸ (ԲԱՑՎՈՒՄ Է ՄԻԱՅՆ ՃԻՇՏ ԳԱՂՏՆԱԲԱՌԻՑ ՀԵՏՈ)
-// -------------------------------------------------------------
 ?>
+
 <!DOCTYPE html>
 <html lang="hy">
 <head>
@@ -454,7 +438,7 @@ endif;
                     const t = adminTranslations[currentLang];
                     allAdminTours = data.tours || [];
 
-                    const localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
+                    const localBookings = currentLoadedBookings.length > 0 ? currentLoadedBookings : (JSON.parse(localStorage.getItem('admin_bookings_list')) || []);
 
                     allAdminTours.forEach(tour => {
                         const title = tour['title_' + currentLang] || tour.title_hy || tour.title_en || "Untitled";
@@ -557,17 +541,18 @@ endif;
             if(!tableBody) return;
             tableBody.innerHTML = '';
 
-            let localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
             fetch('get_bookings.php')
                 .then(res => res.json())
                 .then(dbBookings => {
                     if (Array.isArray(dbBookings) && dbBookings.length > 0) {
                         drawBookingsTable(dbBookings);
                     } else {
+                        let localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
                         drawBookingsTable(localBookings);
                     }
                 })
                 .catch(() => {
+                    let localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
                     drawBookingsTable(localBookings);
                 });
         }
@@ -611,29 +596,32 @@ endif;
         }
 
         function updateBookingStatus(id, newStatus) {
-            let localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
-            
-            // Որոնում ենք հայտը թե՛ ընթացիկ բեռնված ցուցակում, թե՛ LocalStorage-ում
-            let booking = currentLoadedBookings.find(b => b.id == id) || localBookings.find(b => b.id == id);
+            // 1. Թարմացնում ենք Տվյալների Բազայում (DB)
+            fetch('update_booking_status.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, status: newStatus })
+            })
+            .then(() => {
+                // 2. Թարմացնում ենք LocalStorage-ում
+                let localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
+                let booking = currentLoadedBookings.find(b => b.id == id) || localBookings.find(b => b.id == id);
 
-            if (booking) {
-                booking.status = newStatus;
-                
-                let idx = localBookings.findIndex(b => b.id == id);
-                if (idx !== -1) {
-                    localBookings[idx].status = newStatus;
-                } else {
-                    localBookings.push(booking);
+                if (booking) {
+                    booking.status = newStatus;
+                    let idx = localBookings.findIndex(b => b.id == id);
+                    if (idx !== -1) localBookings[idx].status = newStatus;
+                    else localBookings.push(booking);
+                    
+                    localStorage.setItem('admin_bookings_list', JSON.stringify(localBookings));
+                    
+                    // 3. Ուղարկում ենք EmailJS նամակը
+                    sendEmailNotification(booking, newStatus);
                 }
-                
-                localStorage.setItem('admin_bookings_list', JSON.stringify(localBookings));
-                
-                // Ուղարկում ենք էլ․ նամակ EmailJS-ի միջոցով
-                sendEmailNotification(booking, newStatus);
-            }
-            
-            renderBookings();
-            renderAdminTours();
+
+                renderBookings();
+                renderAdminTours();
+            });
         }
 
         function sendEmailNotification(booking, status) {
@@ -661,19 +649,20 @@ endif;
 
             emailjs.send("service_5roj4kc", "template_mqpg89r", templateParams)
                 .then(function(response) {
-                    console.log("Email sent successfully!", response.status, response.text);
                     alert(`Նամակը հաջողությամբ ուղարկվեց ${clientEmail} հասցեին:`);
                 }, function(error) {
-                    console.error("EmailJS error:", error);
-                    alert("Խափանում նամակն ուղարկելիս։ Ստուգեք EmailJS Service ID-ն և Template ID-ն։");
+                    alert("Խափանում նամակն ուղարկելիս։ Ստուգեք EmailJS-ի կարգավորումները։");
                 });
         }
 
         function clearAllBookings() {
-            if (confirm("Վստա՞հ եք, որ ուզում եք մաքրել բոլոր հայտերը:")) {
-                localStorage.removeItem('admin_bookings_list');
-                renderBookings();
-                renderAdminTours();
+            if (confirm("Վստա՞հ եք, որ ուզում եք մաքրել բոլոր հայտերը (Բազայից և LocalStorage-ից):")) {
+                fetch('clear_bookings.php')
+                    .then(() => {
+                        localStorage.removeItem('admin_bookings_list');
+                        renderBookings();
+                        renderAdminTours();
+                    });
             }
         }
 
