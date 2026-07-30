@@ -1,23 +1,28 @@
-FROM php:8.2-apache
+FROM php:8.2-fpm-bookworm
 
-# Միացնում ենք pdo_mysql և mysqli
-RUN docker-php-ext-install pdo pdo_mysql mysqli
+# Անհրաժեշտ փաթեթներ + Nginx
+RUN apt-get update && apt-get install -y \
+    nginx \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    && docker-php-ext-install pdo pdo_mysql mysqli \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Հանում ենք MPM կոնֆլիկտը
-RUN a2dismod mpm_event && a2enmod mpm_prefork
+# Nginx կոնֆիգ
+RUN rm /etc/nginx/sites-enabled/default
+COPY nginx.conf /etc/nginx/sites-available/default
+RUN ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
 
-# Railway-ի PORT-ը կարգավորում ենք
-ENV APACHE_LISTEN_PORT=8080
-RUN sed -i 's/80/${APACHE_LISTEN_PORT}/g' /etc/apache2/ports.conf \
-    && sed -i 's/:80/:${APACHE_LISTEN_PORT}/g' /etc/apache2/sites-available/000-default.conf
+# Կոդը
+WORKDIR /var/www/html
+COPY . /var/www/html
+RUN chown -R www-data:www-data /var/www/html
 
-# Կոդը պատճենում ենք
-COPY . /var/www/html/
-
-# Թույլտվություններ
-RUN chown -R www-data:www-data /var/www/html \
-    && a2enmod rewrite headers
+# Startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
 EXPOSE 8080
 
-CMD ["apache2-foreground"]
+CMD ["/start.sh"]
