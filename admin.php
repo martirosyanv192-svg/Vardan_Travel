@@ -141,7 +141,6 @@ endif;
                 <button onclick="toggleLanguage()" id="lang-btn" class="px-3 py-2 text-xs font-black bg-slate-100 dark:bg-slate-800 rounded-xl hover:bg-sky-500 hover:text-white transition-all">EN</button>
                 <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">🌓</button>
                 <button onclick="goToSite()" id="back-site-btn" class="bg-slate-900 dark:bg-sky-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg hover:opacity-90">Դեպի Կայք</button>
-                <a href="admin.php?action=logout" class="bg-red-500/10 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all">Ելք</a>
             </div>
         </div>
     </nav>
@@ -245,9 +244,7 @@ endif;
         <div id="section-bookings" class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border dark:border-slate-800 hidden">
             <div class="flex justify-between items-center border-b dark:border-slate-800 pb-3 mb-4">
                 <h2 id="bookings-title" class="text-base font-black">📩 Հայտեր</h2>
-                <button onclick="clearAllBookings()" class="bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1">
-                    🗑️ Մաքրել հին test հայտերը
-                </button>
+
             </div>
             <div class="overflow-x-auto rounded-xl border dark:border-slate-800">
                 <table class="min-w-full divide-y dark:divide-slate-800 text-sm">
