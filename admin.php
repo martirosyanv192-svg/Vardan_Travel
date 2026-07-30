@@ -631,37 +631,40 @@ endif;
             });
         }
 
-        function sendEmailNotification(booking, status) {
-            const clientEmail = booking.client_email || booking.email;
-            const clientName = booking.client_name || booking.name || "Հաճախորդ";
-            const tourTitle = booking.tour_title || booking.title || "Տուր";
+       function sendEmailNotification(booking, status) {
+    const clientEmail = booking.client_email || booking.email;
+    const clientName = booking.client_name || booking.name || "Հաճախորդ";
+    
+    // Տուրի անունը ճիշտ վերցնելու համար
+    const tourTitle = booking.tour_title || booking.title || booking.tour_name || "Տուր";
 
-            if (!clientEmail || clientEmail === '-') {
-                alert("Հաճախորդի էլ․ փոստը բացակայում է, նամակ չուղարկվեց։");
-                return;
-            }
+    if (!clientEmail || clientEmail === '-') {
+        alert("Հաճախորդի էլ․ փոստը բացակայում է, նամակ չուղարկվեց։");
+        return;
+    }
 
-            const statusText = status === 'APPROVED' ? 'ՀԱՍՏԱՏՎԱԾ Է 🟢' : 'ՄԵՐԺՎԱԾ Է 🔴';
-            const messageText = status === 'APPROVED' 
-                ? `Ուրախ ենք տեղեկացնել, որ «${tourTitle}» տուրի Ձեր ամրագրումը հաջողությամբ հաստատվել է։`
-                : `Ցավոք, «${tourTitle}» տուրի Ձեր ամրագրման հայտը մերժվել է։`;
+    const statusText = status === 'APPROVED' ? 'ՀԱՍՏԱՏՎԱԾ Է 🟢' : 'ՄԵՐԺՎԱԾ Է 🔴';
+    
+    // Ուշադրություն․ այստեղ JavaScript-ում օգտագործվում են ` ` (backticks) նշանները 
+    const messageText = status === 'APPROVED' 
+        ? `Ուրախ ենք տեղեկացնել, որ «${tourTitle}» տուրի Ձեր ամրագրումը հաջողությամբ հաստատվել է։`
+        : `Ցավոք, «${tourTitle}» տուրի Ձեր ամրագրման հայտը մերժվել է։`;
 
-            const templateParams = {
-                to_name: clientName,
-                to_email: clientEmail,
-                tour_name: tourTitle,
-                booking_status: statusText,
-                message: messageText
-            };
+    const templateParams = {
+        to_name: clientName,
+        to_email: clientEmail,
+        tour_name: tourTitle,       // Այստեղ փոխանցում ենք tourTitle փոփոխականը
+        booking_status: statusText,
+        message: messageText
+    };
 
-            emailjs.send("service_5roj4kc", "template_mqpg89r", templateParams)
-                .then(function(response) {
-                    alert(`Նամակը հաջողությամբ ուղարկվեց ${clientEmail} հասցեին:`);
-                }, function(error) {
-                    alert("Խափանում նամակն ուղարկելիս։ Ստուգեք EmailJS-ի կարգավորումները։");
-                });
-        }
-
+    emailjs.send("service_5roj4kc", "template_mqpg89r", templateParams)
+        .then(function(response) {
+            alert(`Նամակը հաջողությամբ ուղարկվեց ${clientEmail} հասցեին:`);
+        }, function(error) {
+            alert("Խափանում նամակն ուղարկելիս։ Ստուգեք EmailJS-ի կարգավորումները։");
+        });
+}
         function clearAllBookings() {
             if (confirm("Վստա՞հ եք, որ ուզում եք մաքրել բոլոր հայտերը (Բազայից և LocalStorage-ից):")) {
                 fetch('clear_bookings.php')
