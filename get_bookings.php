@@ -1,39 +1,11 @@
 <?php
-// db.php-ի միացում
 require_once 'db.php';
-
-// Վերադարձվող ֆորմատը JSON է
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
 try {
-    // Ստանում ենք բոլոր հայտերը/ամրագրումները՝ միացնելով տուրերի աղյուսակը (LEFT JOIN)
-    $sql = "SELECT 
-                b.id,
-                b.tour_id,
-                b.client_name,
-                b.client_email,
-                b.status,
-                b.created_at,
-                COALESCE(t.title_hy, 'Հեռացված տուր') AS tour_title
-            FROM bookings b
-            LEFT JOIN tours t ON b.tour_id = t.id
-            ORDER BY b.id DESC";
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt = $pdo->query("SELECT * FROM bookings ORDER BY id DESC");
     $bookings = $stmt->fetchAll();
-
-    // Վերադարձնում ենք տվյալները JSON ձևաչափով
-    echo json_encode([
-        'success' => true,
-        'bookings' => $bookings
-    ]);
-
+    echo json_encode($bookings, JSON_UNESCAPED_UNICODE);
 } catch (PDOException $e) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Սխալ տվյալներ ստանալիս: ' . $e->getMessage(),
-        'bookings' => []
-    ]);
+    echo json_encode([]);
 }
-?>
