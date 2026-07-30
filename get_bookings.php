@@ -4,8 +4,8 @@ header('Content-Type: application/json; charset=utf-8');
 
 try {
     $stmt = $pdo->query("SELECT * FROM bookings ORDER BY id DESC");
-    $bookings = $stmt->fetchAll();
-    echo json_encode($bookings, JSON_UNESCAPED_UNICODE);
+    echo json_encode($stmt->fetchAll(), JSON_UNESCAPED_UNICODE);
 } catch (PDOException $e) {
+    http_response_code(500);
     echo json_encode([]);
 }

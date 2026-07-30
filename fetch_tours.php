@@ -1,5 +1,4 @@
 <?php
-<?php
 require_once 'db.php';
 header('Content-Type: application/json; charset=utf-8');
 
@@ -8,6 +7,9 @@ try {
     $tours = $stmt->fetchAll();
     echo json_encode($tours, JSON_UNESCAPED_UNICODE);
 } catch (PDOException $e) {
-    echo json_encode([]);
+    http_response_code(500);
+    echo json_encode([
+        "success" => false,
+        "message" => $e->getMessage()
+    ]);
 }
-?>
