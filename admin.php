@@ -436,7 +436,20 @@ endif;
                     const tableBody = document.getElementById('admin-tours-table');
                     tableBody.innerHTML = '';
                     const t = adminTranslations[currentLang];
-                    allAdminTours = data.tours || [];
+                    
+                    // Ճիշտ կարդում ենք տվյալները՝ անկախ նրանից data.tours է, թե direct array
+                    if (Array.isArray(data)) {
+                        allAdminTours = data;
+                    } else if (data && Array.isArray(data.tours)) {
+                        allAdminTours = data.tours;
+                    } else {
+                        allAdminTours = [];
+                    }
+
+                    if (allAdminTours.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400">Տուրեր չկան:</td></tr>`;
+                        return;
+                    }
 
                     const localBookings = currentLoadedBookings.length > 0 ? currentLoadedBookings : (JSON.parse(localStorage.getItem('admin_bookings_list')) || []);
 
@@ -474,7 +487,7 @@ endif;
                         `;
                     });
                 })
-                .catch(() => console.log("Tours fetch error"));
+                .catch(err => console.log("Tours fetch error:", err));
         }
 
         function startEditTour(id) {
@@ -596,14 +609,12 @@ endif;
         }
 
         function updateBookingStatus(id, newStatus) {
-            // 1. Թարմացնում ենք Տվյալների Բազայում (DB)
             fetch('update_booking_status.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: id, status: newStatus })
             })
             .then(() => {
-                // 2. Թարմացնում ենք LocalStorage-ում
                 let localBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
                 let booking = currentLoadedBookings.find(b => b.id == id) || localBookings.find(b => b.id == id);
 
@@ -615,7 +626,6 @@ endif;
                     
                     localStorage.setItem('admin_bookings_list', JSON.stringify(localBookings));
                     
-                    // 3. Ուղարկում ենք EmailJS նամակը
                     sendEmailNotification(booking, newStatus);
                 }
 
