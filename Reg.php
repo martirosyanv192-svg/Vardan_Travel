@@ -1,78 +1,4 @@
-<?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    error_reporting(0);
-    ini_set('display_errors', 0);
-    header('Content-Type: application/json; charset=utf-8');
 
-    $host = "localhost";
-    $db_user = "root";
-    $db_pass = "root";
-    $db_name = "travelgo_db";
-
-    $conn = new mysqli($host, $db_user, $db_pass, $db_name);
-    $conn->set_charset("utf8mb4");
-
-    if ($conn->connect_error) {
-        echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $conn->connect_error]);
-        exit;
-    }
-
-    $conn->query("CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        full_name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )");
-
-    $data = json_decode(file_get_contents("php://input"), true);
-    $full_name = trim($data['full_name'] ?? '');
-    $email = trim($data['email'] ?? '');
-    $password = trim($data['password'] ?? '');
-
-    if (empty($full_name) || empty($email) || empty($password)) {
-        echo json_encode(["success" => false, "message" => "Խնդրում ենք լրացնել բոլոր դաշտերը:"]);
-        exit;
-    }
-
-    $checkStmt = $conn->prepare("SELECT id FROM users WHERE LOWER(email) = LOWER(?)");
-    $checkStmt->bind_param("s", $email);
-    $checkStmt->execute();
-    $checkResult = $checkStmt->get_result();
-
-    if ($checkResult->num_rows > 0) {
-        echo json_encode(["success" => false, "message" => "Այս էլ. հասցեով (Email) օգտատեր արդեն գրանցված է:"]);
-        $checkStmt->close();
-        $conn->close();
-        exit;
-    }
-    $checkStmt->close();
-
-    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-    $insertStmt = $conn->prepare("INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)");
-    $insertStmt->bind_param("sss", $full_name, $email, $hashed_password);
-
-    if ($insertStmt->execute()) {
-        echo json_encode([
-            "success" => true,
-            "message" => "Գրանցումն հաջողվեց:",
-            "user" => [
-                "id" => $insertStmt->insert_id,
-                "full_name" => $full_name,
-                "email" => $email
-            ]
-        ]);
-    } else {
-        echo json_encode(["success" => false, "message" => "Գրանցման սխալ տվյալների բազայում:"]);
-    }
-
-    $insertStmt->close();
-    $conn->close();
-    exit;
-}
-
-session_start();
-?>
 <!DOCTYPE html>
 <html lang="hy">
 <head>
@@ -96,7 +22,6 @@ session_start();
     .globe-1 { font-size: 6rem; top: 60%; left: 5%; animation-duration: 25s; }
     @keyframes float { 0% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(180deg); } 100% { transform: translateY(0) rotate(360deg); } }
     
-    /* Հարմարեցված ֆորմայի չափսը */
     .main-card { 
       position: relative; 
       width: 450px; 
