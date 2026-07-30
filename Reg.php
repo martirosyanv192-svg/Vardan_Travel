@@ -1,4 +1,76 @@
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+    header('Content-Type: application/json; charset=utf-8');
 
+    // Railway DB Connection
+    $host = getenv('MYSQLHOST') ?: 'mysql.railway.internal';
+    $port = getenv('MYSQLPORT') ?: '3306';
+    $db   = getenv('MYSQLDATABASE') ?: 'railway';
+    $user = getenv('MYSQLUSER') ?: 'root';
+    $pass = getenv('MYSQLPASSWORD') ?: 'PRgbbhmvEJxNPSxgUUQYrOjzqdxJRwNq';
+
+    try {
+        $dsn = "mysql:host=$host;port=$port;dbname=$db;charset=utf8mb4";
+        $pdo = new PDO($dsn, $user, $pass, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ"]);
+        exit;
+    }
+
+    // Ստեղծում ենք users աղյուսակը եթե չկա
+    $pdo->exec("CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        full_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+    $data = json_decode(file_get_contents("php://input"), true);
+    $full_name = trim($data['full_name'] ?? '');
+    $email = trim($data['email'] ?? '');
+    $password = trim($data['password'] ?? '');
+
+    if (empty($full_name) || empty($email) || empty($password)) {
+        echo json_encode(["success" => false, "message" => "Խնդրում ենք լրացնել բոլոր դաշտերը:"]);
+        exit;
+    }
+
+    try {
+        $checkStmt = $pdo->prepare("SELECT id FROM users WHERE LOWER(email) = LOWER(?)");
+        $checkStmt->execute([$email]);
+
+        if ($checkStmt->fetch()) {
+            echo json_encode(["success" => false, "message" => "Այս էլ. հասցեով (Email) օգտատեր արդեն գրանցված է:"]);
+            exit;
+        }
+
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+        $insertStmt = $pdo->prepare("INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)");
+        $insertStmt->execute([$full_name, $email, $hashed_password]);
+
+        echo json_encode([
+            "success" => true,
+            "message" => "Գրանցումն հաջողվեց:",
+            "user" => [
+                "id" => $pdo->lastInsertId(),
+                "full_name" => $full_name,
+                "email" => $email
+            ]
+        ]);
+    } catch (PDOException $e) {
+        echo json_encode(["success" => false, "message" => "Գրանցման սխալ տվյալների բազայում:"]);
+    }
+    exit;
+}
+
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="hy">
 <head>
