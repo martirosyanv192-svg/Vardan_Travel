@@ -274,8 +274,8 @@ session_start();
         <button type="submit" class="btn-glow">ՄՈՒՏՔ ԳՈՐԾԵԼ</button>
 
         <div class="switch-link">
-          <span>Չունե՞ք հաշիվ:</span> 
-          <a href="Reg.php">Գրանցվել <br> </a> 
+          <span>ՈՒնե՝ք հաշիվ:</span> 
+          <a href="login.php"> <br>Մուտք </a> 
                     <a href="index.php">Փակել</a>
 
         </div>
