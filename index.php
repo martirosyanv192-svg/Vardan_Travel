@@ -24,11 +24,14 @@ session_start();
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         #map { 
-            height: 200px;
+            height: 180px;
             width: 100%; 
             border-radius: 1rem; 
             z-index: 10; 
             filter: none !important;
+        }
+        @media (min-width: 640px) {
+            #map { height: 200px; }
         }
         .leaflet-tile {
             filter: none !important;
@@ -42,59 +45,59 @@ session_start();
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-300">
+<body class="bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-300 overflow-x-hidden">
 
     <nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50 border-b border-slate-200 dark:border-slate-800">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between h-20 items-center">
-            <a href="index.php" class="flex items-center gap-3">
-                <img src="https://i.postimg.cc/02XvYg7m/travel-logo.png" alt="Logo" class="h-10 w-auto dark:invert">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between h-16 sm:h-20 items-center">
+            <a href="index.php" class="flex items-center gap-2 sm:gap-3">
+                <img src="https://i.postimg.cc/02XvYg7m/travel-logo.png" alt="Logo" class="h-8 sm:h-10 w-auto dark:invert">
                 <div class="flex flex-col">
-                    <span class="text-2xl font-black tracking-wider uppercase italic leading-none">Travel<span class="text-sky-500">Go</span></span>
-                    <span class="text-[9px] font-bold text-slate-400 tracking-widest uppercase">Premium Luxury Tours</span>
+                    <span class="text-xl sm:text-2xl font-black tracking-wider uppercase italic leading-none">Travel<span class="text-sky-500">Go</span></span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-slate-400 tracking-widest uppercase">Premium Luxury Tours</span>
                 </div>
             </a>
-            <div class="flex items-center gap-4">
-                <button onclick="toggleLanguage()" id="lang-btn" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-black hover:bg-sky-500 hover:text-white transition-all">EN</button>
-                <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">🌓</button>
-                <div id="nav-auth-buttons" class="flex gap-2"></div>
+            <div class="flex items-center gap-2 sm:gap-4">
+                <button onclick="toggleLanguage()" id="lang-btn" class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-black hover:bg-sky-500 hover:text-white transition-all">EN</button>
+                <button onclick="toggleDarkMode()" class="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-sm sm:text-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">🌓</button>
+                <div id="nav-auth-buttons" class="flex gap-1.5 sm:gap-2"></div>
             </div>
         </div>
     </nav>
 
-    <header class="relative overflow-hidden bg-slate-900 text-white py-14 px-6 border-b border-slate-800">
+    <header class="relative overflow-hidden bg-slate-900 text-white py-10 sm:py-14 px-4 sm:px-6 border-b border-slate-800">
         <div class="absolute inset-0 bg-gradient-to-r from-sky-950/80 via-slate-900/90 to-slate-950/95 z-0"></div>
         <div class="relative z-10 max-w-7xl mx-auto text-center space-y-3">
-            <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-bold uppercase tracking-widest mb-1">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-1">
                 ✨ Luxury Travel Experience
             </div>
-            <h1 id="hero-title" class="text-3xl md:text-5xl font-black uppercase tracking-tight">
+            <h1 id="hero-title" class="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight leading-tight">
                 Հայաստանի Տեսարժան Վայրերը
             </h1>
-            <p id="hero-subtitle" class="text-slate-400 max-w-2xl mx-auto text-xs md:text-sm font-medium">
+            <p id="hero-subtitle" class="text-slate-400 max-w-2xl mx-auto text-xs sm:text-sm font-medium">
                 Բացահայտեք Հայաստանի պատմամշակութային կոթողները, լեռներն ու հրաշալիքները բարձրակարգ տուրերի միջոցով
             </p>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-12 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 flex-grow w-full">
 
-        <div class="max-w-5xl mx-auto glass border border-slate-200 dark:border-slate-800 p-8 rounded-3xl mb-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center shadow-xl">
+        <div class="max-w-5xl mx-auto glass border border-slate-200 dark:border-slate-800 p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl mb-8 sm:mb-12 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 items-center shadow-xl">
             
             <div class="flex flex-col justify-center">
-                <label id="lbl-search" class="block text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">🔍 Որոնում</label>
+                <label id="lbl-search" class="block text-xs sm:text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">🔍 Որոնում</label>
                 <input 
                     type="text" 
                     id="search-input" 
                     oninput="filterTours()" 
                     placeholder="Փնտրել տուրը (անվանում, նկարագրություն)..." 
-                    class="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/70 p-4 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-inner"
+                    class="w-full rounded-xl sm:rounded-2xl border border-slate-300 dark:border-slate-700 bg-white/70 dark:bg-slate-900/70 p-3 sm:p-4 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-inner"
                 />
             </div>
 
             <div class="flex flex-col justify-center">
                 <div class="flex justify-between items-center mb-2">
-                    <label id="lbl-max-price" class="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">💰 Առավելագույն Գին</label>
-                    <span id="price-value" class="text-base font-black text-sky-500 bg-sky-500/10 px-3 py-1 rounded-xl border border-sky-500/20">25,000,000 ֏</span>
+                    <label id="lbl-max-price" class="text-xs sm:text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider">💰 Առավելագույն Գին</label>
+                    <span id="price-value" class="text-xs sm:text-base font-black text-sky-500 bg-sky-500/10 px-2.5 sm:px-3 py-1 rounded-xl border border-sky-500/20">25,000,000 ֏</span>
                 </div>
                 <input 
                     type="range" 
@@ -104,38 +107,38 @@ session_start();
                     step="5000" 
                     value="25000000" 
                     oninput="updatePriceLabel(this.value); filterTours();" 
-                    class="w-full accent-sky-500 cursor-pointer h-3 bg-slate-200 dark:bg-slate-800 rounded-lg"
+                    class="w-full accent-sky-500 cursor-pointer h-2.5 sm:h-3 bg-slate-200 dark:bg-slate-800 rounded-lg"
                 />
             </div>
 
         </div>
 
-        <div id="tours-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        <div id="tours-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"></div>
     </main>
 
-    <div id="tour-modal" class="fixed inset-0 bg-slate-950/75 z-50 flex items-center justify-center p-4 hidden backdrop-blur-md transition-all duration-300">
-        <div class="bg-[#d5dbe0] dark:bg-slate-900 rounded-[2rem] max-w-lg w-full overflow-hidden shadow-2xl max-h-[92vh] flex flex-col border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-100">
+    <div id="tour-modal" class="fixed inset-0 bg-slate-950/80 z-50 flex items-center justify-center p-3 sm:p-4 hidden backdrop-blur-md transition-all duration-300">
+        <div class="bg-[#d5dbe0] dark:bg-slate-900 rounded-2xl sm:rounded-[2rem] max-w-lg w-full overflow-hidden shadow-2xl max-h-[90vh] flex flex-col border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-100">
             
-            <div class="relative h-56 w-full shrink-0">
+            <div class="relative h-44 sm:h-56 w-full shrink-0">
                 <img id="modal-img" src="" alt="Tour Image" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
-                <h3 id="modal-title" class="absolute bottom-4 left-5 text-2xl font-black text-white tracking-wide drop-shadow-md"></h3>
+                <h3 id="modal-title" class="absolute bottom-3 left-4 right-4 text-lg sm:text-2xl font-black text-white tracking-wide drop-shadow-md truncate"></h3>
             </div>
 
-            <div class="p-5 space-y-4 overflow-y-auto flex-1">
-                <div class="bg-white dark:bg-slate-800/90 rounded-2xl p-3.5 shadow-sm flex items-center justify-between border border-slate-200/60 dark:border-slate-700">
-                    <div class="w-1/2 pr-3">
-                        <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
+            <div class="p-4 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
+                <div class="bg-white dark:bg-slate-800/90 rounded-2xl p-3 sm:p-3.5 shadow-sm flex items-center justify-between border border-slate-200/60 dark:border-slate-700">
+                    <div class="w-1/2 pr-2 sm:pr-3">
+                        <span class="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
                             🚨 ՄԵԿՆԱՐԿ
                         </span>
-                        <p id="modal-date" class="text-xs font-black text-sky-500 mt-0.5">---</p>
+                        <p id="modal-date" class="text-xs font-black text-sky-500 mt-0.5 truncate">---</p>
                     </div>
                     <div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-700"></div>
-                    <div class="w-1/2 pl-4">
-                        <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
+                    <div class="w-1/2 pl-3 sm:pl-4">
+                        <span class="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
                             ⌛ ՏԵՒՈՂՈՒԹՅՈՒՆ
                         </span>
-                        <p id="modal-duration" class="text-xs font-black text-slate-700 dark:text-slate-200 mt-0.5">---</p>
+                        <p id="modal-duration" class="text-xs font-black text-slate-700 dark:text-slate-200 mt-0.5 truncate">---</p>
                     </div>
                 </div>
 
@@ -151,19 +154,19 @@ session_start();
                 </div>
 
                 <div class="space-y-2.5 pt-1">
-                    <input type="text" id="client-name" placeholder="Ձեր Անուն Ազգանունը" class="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-200 placeholder-slate-400 font-medium focus:ring-2 focus:ring-sky-500 outline-none shadow-sm">
-                    <input type="email" id="client-email" placeholder="Ձեր Gmail հասցեն (նամակի համար)" class="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-200 placeholder-slate-400 font-medium focus:ring-2 focus:ring-sky-500 outline-none shadow-sm">
+                    <input type="text" id="client-name" placeholder="Ձեր Անուն Ազգանունը" class="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-200 placeholder-slate-400 font-medium focus:ring-2 focus:ring-sky-500 outline-none shadow-sm">
+                    <input type="email" id="client-email" placeholder="Ձեր Gmail հասցեն (նամակի համար)" class="w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs text-slate-700 dark:text-slate-200 placeholder-slate-400 font-medium focus:ring-2 focus:ring-sky-500 outline-none shadow-sm">
                 </div>
             </div>
 
-            <div class="px-5 py-4 bg-slate-200/60 dark:bg-slate-900/80 border-t border-slate-300/80 dark:border-slate-800 flex items-center justify-between shrink-0">
+            <div class="px-4 sm:px-5 py-3 sm:py-4 bg-slate-200/60 dark:bg-slate-900/80 border-t border-slate-300/80 dark:border-slate-800 flex flex-row items-center justify-between gap-2 shrink-0">
                 <div>
-                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest block">ԱՐԺԵՔԸ</span>
-                    <span id="modal-price" class="text-2xl font-black text-sky-500">0 ֏</span>
+                    <span class="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest block">ԱՐԺԵՔԸ</span>
+                    <span id="modal-price" class="text-lg sm:text-2xl font-black text-sky-500">0 ֏</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="closeModal()" id="btn-close-modal" class="px-5 py-2.5 bg-slate-300/80 hover:bg-slate-400/80 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all">Փակել</button>
-                    <button onclick="submitBooking()" id="btn-submit-booking" class="px-6 py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-xs font-black uppercase shadow-lg shadow-sky-500/30 transition-all">Ամրագրել Հիմա</button>
+                    <button onclick="closeModal()" id="btn-close-modal" class="px-3.5 sm:px-5 py-2 sm:py-2.5 bg-slate-300/80 hover:bg-slate-400/80 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all">Փակել</button>
+                    <button onclick="submitBooking()" id="btn-submit-booking" class="px-4 sm:px-6 py-2 sm:py-2.5 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-xs font-black uppercase shadow-lg shadow-sky-500/30 transition-all">Ամրագրել Հիմա</button>
                 </div>
             </div>
 
@@ -265,15 +268,10 @@ function applyTranslations() {
 
     if (document.getElementById('btn-close-modal')) document.getElementById('btn-close-modal').innerText = t.btnClose;
     if (document.getElementById('btn-submit-booking')) document.getElementById('btn-submit-booking').innerText = t.btnBook;
-
     if (selectedTour) {
-        const title = currentLang === 'hy' ?
-            (selectedTour.title_hy || selectedTour.title_en || selectedTour.title) : (selectedTour.title_en || selectedTour.title_hy || selectedTour.title);
-        const duration = currentLang === 'hy' ?
-            (selectedTour.duration_hy || selectedTour.duration_en || '1 օր') : (selectedTour.duration_en || selectedTour.duration_hy || '1 day');
-        const desc = currentLang === 'hy' ?
-            (selectedTour.description_hy || selectedTour.description_en || selectedTour.description || selectedTour.desc || 'Նկարագրություն առկա չէ։') : (selectedTour.description_en || selectedTour.description_hy || selectedTour.description || selectedTour.desc || 'No description available.');
-
+        const title = currentLang === 'hy' ? (selectedTour.title_hy || selectedTour.title_en || selectedTour.title) : (selectedTour.title_en || selectedTour.title_hy || selectedTour.title);
+        const duration = currentLang === 'hy' ? (selectedTour.duration_hy || selectedTour.duration_en || '1 օր') : (selectedTour.duration_en || selectedTour.duration_hy || '1 day');
+        const desc = currentLang === 'hy' ? (selectedTour.description_hy || selectedTour.description_en || selectedTour.description || selectedTour.desc || 'Նկարագրություն առկա չէ։') : (selectedTour.description_en || selectedTour.description_hy || selectedTour.description || selectedTour.desc || 'No description available.');
         if (document.getElementById('modal-title')) document.getElementById('modal-title').innerText = title;
         if (document.getElementById('modal-duration')) document.getElementById('modal-duration').innerText = duration;
         if (document.getElementById('modal-desc')) document.getElementById('modal-desc').innerText = desc;
@@ -287,10 +285,8 @@ function updateDistanceUI() {
     const distElem = document.getElementById('user-distance');
     const labelElem = document.getElementById('lbl-distance');
     const t = translations[currentLang];
-
     if (labelElem) {
-        labelElem.innerText = t.lblDistancePrefix ||
-            (currentLang === 'hy' ? '📍 Հեռավորությունը Ձեզնից` ' : '📍 Distance from you: ');
+        labelElem.innerText = t.lblDistancePrefix || (currentLang === 'hy' ? '📍 Հեռավորությունը Ձեզնից` ' : '📍 Distance from you: ');
     }
 
     if (!distElem) return;
@@ -311,17 +307,16 @@ function updateAuthUI() {
     const authContainer = document.getElementById('nav-auth-buttons');
     if (!authContainer) return;
     const t = translations[currentLang];
-
     if (currentUser && currentUser.full_name) {
         authContainer.innerHTML = `
-            <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700">
-                <span class="text-xs font-black text-sky-500">👤 ${currentUser.full_name}</span>
-                <button onclick="logout()" class="text-xs text-red-500 font-bold ml-2 uppercase hover:underline">${t.logout}</button>
+            <div class="flex items-center gap-1.5 sm:gap-2 bg-slate-100 dark:bg-slate-800 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-slate-200 dark:border-slate-700">
+                <span class="text-[10px] sm:text-xs font-black text-sky-500 truncate max-w-[100px] sm:max-w-none">👤 ${currentUser.full_name}</span>
+                <button onclick="logout()" class="text-[10px] sm:text-xs text-red-500 font-bold ml-1 uppercase hover:underline">${t.logout}</button>
             </div>`;
     } else {
         authContainer.innerHTML = `
-            <a href="Reg.php" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold uppercase transition-all flex items-center">${t.navReg}</a>
-            <a href="login.php" class="bg-sky-500 hover:bg-sky-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold uppercase shadow-lg shadow-sky-500/20 transition-all flex items-center">${t.navLogin}</a>`;
+            <a href="Reg.php" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold uppercase transition-all flex items-center">${t.navReg}</a>
+            <a href="login.php" class="bg-sky-500 hover:bg-sky-600 text-white px-3.5 sm:px-5 py-1.5 sm:py-2.5 rounded-xl text-[10px] sm:text-xs font-bold uppercase shadow-lg shadow-sky-500/20 transition-all flex items-center">${t.navLogin}</a>`;
     }
 }
 
@@ -332,7 +327,6 @@ function loadTours() {
             return res.json();
         })
         .then(data => { 
-            // Ուղղված մաս — fetch_tours.php-ը վերադարձնում է զանգված
             loadedTours = Array.isArray(data) ? data : (data.tours || []); 
             filterTours(); 
         })
@@ -350,7 +344,6 @@ function updatePriceLabel(val) {
 function filterTours() {
     const searchVal = (document.getElementById('search-input')?.value || "").toLowerCase().trim();
     const maxPrice = Number(document.getElementById('price-range')?.value || 25000000);
-
     const filtered = loadedTours.filter(tour => {
         const matchesPrice = Number(tour.price || 0) <= maxPrice;
 
@@ -367,7 +360,6 @@ function filterTours() {
 
         return matchesPrice && matchesSearch;
     });
-
     renderTours(filtered);
 }
 
@@ -395,13 +387,13 @@ function renderTours(toursToRender = loadedTours) {
             : (tour.description_en || tour.description_hy || tour.description || tour.desc || 'No description available');
 
         container.innerHTML += `
-            <div class="glass border border-slate-200 dark:border-slate-800 p-5 rounded-3xl space-y-4 flex flex-col justify-between shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300">
-                <div class="space-y-3">
-                    <div class="relative h-52 w-full overflow-hidden rounded-2xl">
+            <div class="glass border border-slate-200 dark:border-slate-800 p-4 sm:p-5 rounded-2xl sm:rounded-3xl space-y-3 sm:space-y-4 flex flex-col justify-between shadow-lg hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300">
+                <div class="space-y-2.5 sm:space-y-3">
+                    <div class="relative h-44 sm:h-52 w-full overflow-hidden rounded-xl sm:rounded-2xl">
                         <img src="${tour.image_url || 'https://via.placeholder.com/400'}" class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500">
                     </div>
 
-                    <h3 class="font-black text-xl text-slate-900 dark:text-white line-clamp-1">
+                    <h3 class="font-black text-lg sm:text-xl text-slate-900 dark:text-white line-clamp-1">
                         ${title}
                     </h3>
 
@@ -411,8 +403,8 @@ function renderTours(toursToRender = loadedTours) {
                 </div>
 
                 <div class="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800 mt-auto">
-                    <span class="text-xl font-black text-sky-500">${Number(tour.price).toLocaleString()} ֏</span>
-                    <button onclick="openModal(${tour.id})" class="bg-sky-500 hover:bg-sky-600 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase shadow-md shadow-sky-500/20 transition-all">
+                    <span class="text-lg sm:text-xl font-black text-sky-500">${Number(tour.price).toLocaleString()} ֏</span>
+                    <button onclick="openModal(${tour.id})" class="bg-sky-500 hover:bg-sky-600 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-black uppercase shadow-md shadow-sky-500/20 transition-all">
                         ${t.more}
                     </button>
                 </div>
@@ -436,14 +428,12 @@ function openModal(id) {
     if (!selectedTour) return;
 
     applyTranslations();
-
     if (document.getElementById('modal-img')) document.getElementById('modal-img').src = selectedTour.image_url || 'https://via.placeholder.com/600';
     if (document.getElementById('modal-date')) document.getElementById('modal-date').innerText = selectedTour.tour_date || '2026-08-15 07:30';
     if (document.getElementById('modal-price')) document.getElementById('modal-price').innerText = `${Number(selectedTour.price).toLocaleString()} ֏`;
 
     currentDistType = 'calc';
     updateDistanceUI();
-
     if (currentUser) {
         if (document.getElementById('client-name')) document.getElementById('client-name').value = currentUser.full_name || '';
         if (document.getElementById('client-email')) document.getElementById('client-email').value = currentUser.email || '';
@@ -531,7 +521,6 @@ function submitBooking() {
     }
 
     const tourTitle = selectedTour ? (currentLang === 'hy' ? (selectedTour.title_hy || selectedTour.title_en || selectedTour.title) : (selectedTour.title_en || selectedTour.title_hy || selectedTour.title)) : "Տուր";
-
     const newBooking = {
         id: Date.now(),
         client_name: finalClientName,
@@ -541,7 +530,6 @@ function submitBooking() {
         created_at: new Date().toLocaleString(),
         status: "PENDING"
     };
-
     const existingBookings = JSON.parse(localStorage.getItem('admin_bookings_list')) || [];
     existingBookings.push(newBooking);
     localStorage.setItem('admin_bookings_list', JSON.stringify(existingBookings));
