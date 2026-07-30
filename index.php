@@ -144,31 +144,24 @@ try {
             document.getElementById('modal-submit-btn').innerText = t.submitBooking;
         }
 
-let allTours = [];
-
-function loadTours() {
-    fetch('fetch_tours.php')
-        .then(res => {
-            if (!res.ok) throw new Error('Network response was not ok');
-            return res.json();
-        })
-        .then(data => {
-            allTours = Array.isArray(data) ? data : [];
-            if (typeof renderTours === 'function') {
-                renderTours(allTours);
-            } else {
-                // եթե քո render ֆունկցիան այլ անուն ունի
-                console.log('Tours loaded:', allTours);
-            }
-        })
-        .catch(err => {
-            console.error('Տուրերը չբեռնվեցին:', err);
-            const container = document.getElementById('tours-container') || document.querySelector('.tours-grid') || document.querySelector('#tours');
-            if (container) {
-                container.innerHTML = `<div class="text-center text-red-500 py-16 text-lg font-bold">✕ Տուրեր չեն գտնվել</div>`;
-            }
-        });
-}
+        function loadTours() {
+            fetch('fetch_tours.php')
+                .then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then(data => {
+                    allTours = Array.isArray(data) ? data : [];
+                    renderTours();
+                })
+                .catch(err => {
+                    console.error('Տուրերը չբեռնվեցին:', err);
+                    const grid = document.getElementById('tours-grid');
+                    if (grid) {
+                        grid.innerHTML = `<div class="col-span-3 text-center text-red-500 py-16 text-lg font-bold">✕ Տուրեր չեն գտնվել</div>`;
+                    }
+                });
+        }
 
         function renderTours() {
             const grid = document.getElementById('tours-grid');
