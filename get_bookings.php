@@ -1,11 +1,14 @@
 <?php
 require_once 'db.php';
-header('Content-Type: application/json; charset=utf-8');
 
-try {
-    $stmt = $pdo->query("SELECT * FROM bookings ORDER BY id DESC");
-    echo json_encode($stmt->fetchAll(), JSON_UNESCAPED_UNICODE);
-} catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode([]);
-}
+// SQL հարցում, որը բերում է նաև տուրի անվանումը ըստ tour_id-ի
+$stmt = $pdo->prepare("
+    SELECT b.*, t.title_hy AS tour_title 
+    FROM bookings b 
+    LEFT JOIN tours t ON b.tour_id = t.id 
+    ORDER BY b.id DESC
+");
+$stmt->execute();
+$bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+echo json_encode($bookings);
