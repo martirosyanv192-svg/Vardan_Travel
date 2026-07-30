@@ -327,12 +327,19 @@ function updateAuthUI() {
 
 function loadTours() {
     fetch('fetch_tours.php')
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error('Network response was not ok');
+            return res.json();
+        })
         .then(data => { 
-            loadedTours = data.tours || []; 
+            // Ուղղված մաս — fetch_tours.php-ը վերադարձնում է զանգված
+            loadedTours = Array.isArray(data) ? data : (data.tours || []); 
             filterTours(); 
         })
-        .catch(() => filterTours());
+        .catch(err => {
+            console.error('Տուրերը չբեռնվեցին:', err);
+            filterTours();
+        });
 }
 
 function updatePriceLabel(val) {
