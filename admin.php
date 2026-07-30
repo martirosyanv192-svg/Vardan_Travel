@@ -631,12 +631,12 @@ endif;
             });
         }
 
-       function sendEmailNotification(booking, status) {
+     function sendEmailNotification(booking, status) {
     const clientEmail = booking.client_email || booking.email;
     const clientName = booking.client_name || booking.name || "Հաճախորդ";
     
-    // Տուրի անունը ճիշտ վերցնելու համար
-    const tourTitle = booking.tour_title || booking.title || booking.tour_name || "Տուր";
+    // Փորձում է գտնել տուրի անունը բոլոր հնարավոր դաշտերից
+    const tourTitle = booking.tour_title || booking.title || booking.tour_name || booking.title_hy || booking.title_en || "Տուր";
 
     if (!clientEmail || clientEmail === '-') {
         alert("Հաճախորդի էլ․ փոստը բացակայում է, նամակ չուղարկվեց։");
@@ -645,7 +645,6 @@ endif;
 
     const statusText = status === 'APPROVED' ? 'ՀԱՍՏԱՏՎԱԾ Է 🟢' : 'ՄԵՐԺՎԱԾ Է 🔴';
     
-    // Ուշադրություն․ այստեղ JavaScript-ում օգտագործվում են ` ` (backticks) նշանները 
     const messageText = status === 'APPROVED' 
         ? `Ուրախ ենք տեղեկացնել, որ «${tourTitle}» տուրի Ձեր ամրագրումը հաջողությամբ հաստատվել է։`
         : `Ցավոք, «${tourTitle}» տուրի Ձեր ամրագրման հայտը մերժվել է։`;
@@ -653,7 +652,7 @@ endif;
     const templateParams = {
         to_name: clientName,
         to_email: clientEmail,
-        tour_name: tourTitle,       // Այստեղ փոխանցում ենք tourTitle փոփոխականը
+        tour_name: tourTitle,
         booking_status: statusText,
         message: messageText
     };
