@@ -7,24 +7,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // PHP 8-ում կանխում ենք 500 Fatal Error Exception-ը
     mysqli_report(MYSQLI_REPORT_OFF);
 
-    $host    = getenv('MYSQLHOST')     ?: getenv('MYSQL_HOST')     ?: "localhost";
-    $db_user = getenv('MYSQLUSER')     ?: getenv('MYSQL_USER')     ?: "root";
-    $db_pass = getenv('MYSQLPASSWORD') ?: getenv('MYSQL_PASSWORD') ?: "root";
-    $db_name = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: "railway";
-    $port    = getenv('MYSQLPORT')     ?: getenv('MYSQL_PORT')     ?: 3306;
+// Railway Environment Variables
+$host    = getenv('MYSQLHOST')     ?: getenv('MYSQL_HOST')     ?: "mysql.railway.internal";
+$db_user = getenv('MYSQLUSER')     ?: getenv('MYSQL_USER')     ?: "root";
+$db_pass = getenv('MYSQLPASSWORD') ?: getenv('MYSQL_PASSWORD') ?: "PRgbbhmvEJxNPSxgUUQYrOjzqdxJRwNq";
+$db_name = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: "railway";
+$port    = getenv('MYSQLPORT')     ?: getenv('MYSQL_PORT')     ?: 3306;
 
-    try {
-        $conn = new mysqli($host, $db_user, $db_pass, $db_name, (int)$port);
-        if ($conn->connect_error) {
-            echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $conn->connect_error]);
-            exit;
-        }
-    } catch (Exception $e) {
-        echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $e->getMessage()]);
+// Try to connect to MySQL
+try {
+    $conn = new mysqli($host, $db_user, $db_pass, $db_name, (int)$port);
+    if ($conn->connect_error) {
+        echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $conn->connect_error]);
         exit;
     }
+} catch (Exception $e) {
+    echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $e->getMessage()]);
+    exit;
+}
 
-    $conn->set_charset("utf8mb4");
+$conn->set_charset("utf8mb4");
 
     $data = json_decode(file_get_contents("php://input"), true);
     $email = trim($data['email'] ?? '');
