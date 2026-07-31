@@ -4,17 +4,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ini_set('display_errors', 0);
     header('Content-Type: application/json; charset=utf-8');
 
-    // Railway-ի Environment Variables-ի ընթերցում
+    // PHP 8-ում կանխում ենք 500 Fatal Error Exception-ը
+    mysqli_report(MYSQLI_REPORT_OFF);
+
     $host    = getenv('MYSQLHOST')     ?: getenv('MYSQL_HOST')     ?: "localhost";
     $db_user = getenv('MYSQLUSER')     ?: getenv('MYSQL_USER')     ?: "root";
     $db_pass = getenv('MYSQLPASSWORD') ?: getenv('MYSQL_PASSWORD') ?: "root";
     $db_name = getenv('MYSQLDATABASE') ?: getenv('MYSQL_DATABASE') ?: "railway";
     $port    = getenv('MYSQLPORT')     ?: getenv('MYSQL_PORT')     ?: 3306;
 
-    $conn = new mysqli($host, $db_user, $db_pass, $db_name, (int)$port);
-
-    if ($conn->connect_error) {
-        echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ"]);
+    try {
+        $conn = new mysqli($host, $db_user, $db_pass, $db_name, (int)$port);
+        if ($conn->connect_error) {
+            echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $conn->connect_error]);
+            exit;
+        }
+    } catch (Exception $e) {
+        echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $e->getMessage()]);
         exit;
     }
 
@@ -98,7 +104,6 @@ session_start();
     .compass-1 { font-size: 5rem; bottom: 15%; right: 12%; animation-duration: 20s; }
     .globe-1 { font-size: 6rem; top: 60%; left: 5%; animation-duration: 25s; }
     @keyframes float { 0% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-30px) rotate(180deg); } 100% { transform: translateY(0) rotate(360deg); } }
-    
     .main-card { position: relative; width: 450px; max-width: 95%; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 28px; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6); overflow: hidden; z-index: 10; }
     .form-container { padding: 50px 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
     .glass-form { width: 100%; color: #fff; }
@@ -115,7 +120,6 @@ session_start();
   </style>
 </head>
 <body>
-
   <div class="animated-bg">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
@@ -124,30 +128,24 @@ session_start();
     <i class="fa-solid fa-compass floating-icon compass-1"></i>
     <i class="fa-solid fa-earth-americas floating-icon globe-1"></i>
   </div>
-
   <div class="main-card">
     <div class="form-container">
       <form class="glass-form" onsubmit="handleRegisterSubmit(event)">
         <h1 class="glow-text">Գրանցում ✨</h1>
         <p class="subtitle">Միացիր TravelGo ընտանիքին</p>
-
         <div class="input-box">
           <input type="text" id="reg-name" required placeholder=" ">
           <label><i class="fa-solid fa-user"></i> Անուն Ազգանուն</label>
         </div>
-
         <div class="input-box">
           <input type="email" id="reg-email" required placeholder=" ">
           <label><i class="fa-solid fa-envelope"></i> Էլ. Հասցե</label>
         </div>
-
         <div class="input-box">
           <input type="password" id="reg-pass" required placeholder=" ">
           <label><i class="fa-solid fa-lock"></i> Գաղտնաբառ</label>
         </div>
-
         <button type="submit" class="btn-glow">ԳՐԱՆՑՎԵԼ</button>
-
         <div class="switch-link">
           <span>Արդեն ունե՞ք հաշիվ:</span>
           <a href="login.php">Մուտք</a>
@@ -155,7 +153,6 @@ session_start();
       </form>
     </div>
   </div>
-
   <script>
     function handleRegisterSubmit(e) {
       e.preventDefault();
@@ -178,7 +175,7 @@ session_start();
           alert("❌ " + data.message);
         }
       })
-      .catch(() => alert("❌ Սերվերի սխալ"));
+      .catch((err) => alert("❌ Սերվերի սխալ"));
     }
   </script>
 </body>
