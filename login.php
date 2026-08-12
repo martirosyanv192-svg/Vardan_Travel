@@ -6,12 +6,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
 
 $host    = "mysql.railway.internal";
-$db_user = "root";
-$db_pass = "PRgbbhmvEJxNPSgUUQYrOjZqdxJRWNq"; // ձեր իրական գաղտնաբառը սքրինշոթից
-$db_name = "railway";
-$port    = 3306;
+    $db_user = "root";
+    $db_pass = "PRgbbhmvEJxNPSgUUQYrOjZqdxJRWNq"; // Ձեր իրական գաղտնաբառը սքրինշոթից
+    $db_name = "railway";
+    $port    = 3306;
 
-$conn = @new mysqli($host, $db_user, $db_pass, $db_name, (int)$port);
+    $conn = @new mysqli($host, $db_user, $db_pass, $db_name, (int)$port);
     
     if ($conn->connect_error) {
         echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $conn->connect_error]);
