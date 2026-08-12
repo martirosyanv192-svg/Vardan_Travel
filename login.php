@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $host    = getenv('MYSQLHOST')     ?: "mysql.railway.internal";
     $db_user = getenv('MYSQLUSER')     ?: "root";
-    $db_pass = getenv('MYSQLPASSWORD') ?: (getenv('MYSQL_ROOT_PASSWORD') ?: "PRgbbhmvEJxNPSgUUQYrOjZqdxJRWNq");
+    $db_pass = getenv('MYSQLPASSWORD') ?: (getenv('MYSQL_ROOT_PASSWORD') ?: "root");
     $db_name = getenv('MYSQLDATABASE') ?: (getenv('MYSQL_DATABASE') ?: "railway");
     $port    = (int)(getenv('MYSQLPORT') ?: 3306);
 
