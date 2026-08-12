@@ -5,9 +5,9 @@ ini_set('display_errors', 1);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
 
-    $host    = getenv('MYSQLHOST')     ?: (getenv('DB_HOST')     ?: "localhost");
+    $host    = getenv('MYSQLHOST')     ?: (getenv('DB_HOST')     ?: "mysql.railway.internal");
     $db_user = getenv('MYSQLUSER')     ?: (getenv('DB_USER')     ?: "root");
-    $db_pass = getenv('MYSQLPASSWORD') ?: (getenv('DB_PASSWORD') ?: (getenv('MYSQL_PASSWORD') ?: "root"));
+    $db_pass = getenv('MYSQLPASSWORD') ?: (getenv('DB_PASSWORD') ?: (getenv('root') ?: "root"));
     $db_name = getenv('MYSQLDATABASE') ?: (getenv('DB_NAME') ?: "travelgo_db");
     $port    = getenv('MYSQLPORT')     ?: (getenv('DB_PORT')     ?: 3306);
 
