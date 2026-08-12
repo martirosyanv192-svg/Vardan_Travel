@@ -1,7 +1,8 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    error_reporting(0);
-    ini_set('display_errors', 0);
     header('Content-Type: application/json; charset=utf-8');
 
     $host    = getenv('MYSQLHOST')     ?: (getenv('DB_HOST')     ?: "localhost");
@@ -18,7 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $conn->set_charset("utf8mb4");
 
-    $data = json_decode(file_get_contents("php://input"), true);
+    $raw_input = file_get_contents("php://input");
+    $data = json_decode($raw_input, true);
+    
     $email = trim($data['email'] ?? '');
     $password = trim($data['password'] ?? '');
 
@@ -174,12 +177,20 @@ session_start();
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-pass').value.trim();
 
-      fetch('', {
+      fetch('login.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password: password })
       })
-      .then(res => res.json())
+      .then(async res => {
+        const text = await res.text();
+        try {
+          return JSON.parse(text);
+        } catch (err) {
+          console.error("Server response:", text);
+          throw new Error("Սերվերից ստացվել է ոչ վավեր պատասխան: Տես Console-ը:");
+        }
+      })
       .then(data => {
         if (data.success) {
           localStorage.setItem('active_user', JSON.stringify(data.user));
@@ -189,7 +200,7 @@ session_start();
           alert("❌ " + data.message);
         }
       })
-      .catch(() => alert("❌ Սերվերի սխալ"));
+      .catch(err => alert("❌ " + err.message));
     }
   </script>
 </body>
