@@ -174,7 +174,7 @@ session_start();
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-pass').value.trim();
 
-      fetch('login.php', {
+      fetch('', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password: password })

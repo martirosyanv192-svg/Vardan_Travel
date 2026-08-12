@@ -91,7 +91,7 @@ endif;
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
        (function(){
-          emailjs.init("3uKWb1VrH8SEnGTCO");
+          emailjs.init("gYWB_yYDi4edcQ09b");
        })();
     </script>
 
@@ -657,7 +657,7 @@ endif;
         message: messageText
     };
 
-    emailjs.send("service_5roj4kc", "template_mqpg89r", templateParams)
+    emailjs.send("service_b22qmvy", "template_8u3vp8k", templateParams)
         .then(function(response) {
             alert(`Նամակը հաջողությամբ ուղարկվեց ${clientEmail} հասցեին:`);
         }, function(error) {

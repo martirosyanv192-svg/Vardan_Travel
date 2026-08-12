@@ -179,7 +179,7 @@ session_start();
       const email = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-pass').value.trim();
 
-      fetch('Reg.php', {
+      fetch('', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ full_name: name, email: email, password: password })
