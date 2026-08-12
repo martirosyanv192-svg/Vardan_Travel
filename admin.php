@@ -657,7 +657,7 @@ endif;
         message: messageText
     };
 
-    emailjs.send("service_b22qmvy", "template_8u3vp8k", templateParams)
+    emailjs.send("service_1d0cgfm", "template_k7kfgma", templateParams)
         .then(function(response) {
             alert(`Նամակը հաջողությամբ ուղարկվեց ${clientEmail} հասցեին:`);
         }, function(error) {
