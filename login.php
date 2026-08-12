@@ -5,13 +5,13 @@ ini_set('display_errors', 1);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
 
-    $host    = getenv('MYSQLHOST')     ?: (getenv('DB_HOST')     ?: "localhost");
-    $db_user = getenv('MYSQLUSER')     ?: (getenv('DB_USER')     ?: "root");
-    $db_pass = getenv('MYSQLPASSWORD') ?: (getenv('DB_PASSWORD') ?: (getenv('MYSQL_ROOT_PASSWORD') ?: (getenv('MYSQL_PASSWORD') ?: "root")));
-    $db_name = getenv('MYSQLDATABASE') ?: (getenv('MYSQL_DATABASE') ?: (getenv('DB_NAME') ?: "railway"));
-    $port    = getenv('MYSQLPORT')     ?: (getenv('DB_PORT')     ?: 3306);
+$host    = "mysql.railway.internal";
+$db_user = "root";
+$db_pass = "PRgbbhmvEJxNPSgUUQYrOjZqdxJRWNq"; // ձեր իրական գաղտնաբառը սքրինշոթից
+$db_name = "railway";
+$port    = 3306;
 
-    $conn = @new mysqli($host, $db_user, $db_pass, $db_name, (int)$port);
+$conn = @new mysqli($host, $db_user, $db_pass, $db_name, (int)$port);
     
     if ($conn->connect_error) {
         echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $conn->connect_error]);
