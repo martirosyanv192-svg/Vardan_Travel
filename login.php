@@ -5,14 +5,13 @@ ini_set('display_errors', 1);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
 
-$host    = "thomas.proxy.rlwy.net"; // Ձեր Railway-ի Public Host-ը
-$db_user = "root";
-$db_pass = "root"; // Ձեր իրական գաղտնաբառը
-$db_name = "railway";
-$port    = 16638; // Ձեր Railway-ի Public Port-ը սքրինշոթից
+$host    = getenv('MYSQLHOST')     ?: "mysql.railway.internal";
+    $db_user = getenv('MYSQLUSER')     ?: "root";
+    $db_pass = getenv('MYSQLPASSWORD') ?: (getenv('MYSQL_ROOT_PASSWORD') ?: "PRgbbhmvEJxNPSgUUQYrOjZqdxJRWNq");
+    $db_name = getenv('MYSQLDATABASE') ?: (getenv('MYSQL_DATABASE') ?: "railway");
+    $port    = (int)(getenv('MYSQLPORT') ?: 3306);
 
-$conn = @new mysqli($host, $db_user, $db_pass, $db_name, (int)$port);
-    
+    $conn = @new mysqli($host, $db_user, $db_pass, $db_name, $port);
     if ($conn->connect_error) {
         echo json_encode(["success" => false, "message" => "Բազայի միացման սխալ: " . $conn->connect_error]);
         exit;
