@@ -8,7 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Railway-ի միացման պարամետրեր
     $host    = getenv('MYSQLHOST')     ?: "mysql.railway.internal";
     $db_user = getenv('MYSQLUSER')     ?: "root";
-    $db_pass = getenv('MYSQL_ROOT_PASSWORD') ?: (getenv('MYSQLPASSWORD') ?: "PRgbbhmvEJxNPSgUUQYrOjZqdxJRWNq");
+    $db_pass = getenv('MYSQL_ROOT_PASSWORD') ?: (getenv('MYSQLPASSWORD') ?: "PRgbbhmvEJxNPSxgUUQYrOjzqdxJRwNq");
     $db_name = getenv('MYSQLDATABASE') ?: (getenv('MYSQL_DATABASE') ?: "railway");
     $port    = (int)(getenv('MYSQLPORT') ?: 3306);
 
