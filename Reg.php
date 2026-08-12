@@ -5,9 +5,10 @@ ini_set('display_errors', 1);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
 
-$host    = getenv('MYSQLHOST')     ?: "mysql.railway.internal";
+    // Railway-ի միացման պարամետրեր
+    $host    = getenv('MYSQLHOST')     ?: "mysql.railway.internal";
     $db_user = getenv('MYSQLUSER')     ?: "root";
-    $db_pass = getenv('MYSQLPASSWORD') ?: (getenv('MYSQL_ROOT_PASSWORD') ?: "root");
+    $db_pass = getenv('MYSQL_ROOT_PASSWORD') ?: (getenv('MYSQLPASSWORD') ?: "PRgbbhmvEJxNPSgUUQYrOjZqdxJRWNq");
     $db_name = getenv('MYSQLDATABASE') ?: (getenv('MYSQL_DATABASE') ?: "railway");
     $port    = (int)(getenv('MYSQLPORT') ?: 3306);
 
